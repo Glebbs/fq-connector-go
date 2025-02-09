@@ -38,7 +38,7 @@ func (dsc *DataSourceCollection) DescribeTable(
 	case api_common.EGenericDataSourceKind_CLICKHOUSE, api_common.EGenericDataSourceKind_POSTGRESQL,
 		api_common.EGenericDataSourceKind_YDB, api_common.EGenericDataSourceKind_MS_SQL_SERVER,
 		api_common.EGenericDataSourceKind_MYSQL, api_common.EGenericDataSourceKind_GREENPLUM,
-		api_common.EGenericDataSourceKind_ORACLE, api_common.EGenericDataSourceKind_LOGGING:
+		api_common.EGenericDataSourceKind_ORACLE, api_common.EGenericDataSourceKind_LOGGING, api_common.EGenericDataSourceKind_REDIS:
 		ds, err := dsc.rdbms.Make(logger, kind)
 		if err != nil {
 			return nil, fmt.Errorf("make data source: %w", err)
@@ -64,7 +64,7 @@ func (dsc *DataSourceCollection) DoReadSplit(
 	case api_common.EGenericDataSourceKind_CLICKHOUSE, api_common.EGenericDataSourceKind_POSTGRESQL,
 		api_common.EGenericDataSourceKind_YDB, api_common.EGenericDataSourceKind_MS_SQL_SERVER,
 		api_common.EGenericDataSourceKind_MYSQL, api_common.EGenericDataSourceKind_GREENPLUM,
-		api_common.EGenericDataSourceKind_ORACLE, api_common.EGenericDataSourceKind_LOGGING:
+		api_common.EGenericDataSourceKind_ORACLE, api_common.EGenericDataSourceKind_LOGGING, api_common.EGenericDataSourceKind_REDIS:
 		ds, err := dsc.rdbms.Make(logger, kind)
 		if err != nil {
 			return fmt.Errorf("make data source: %w", err)

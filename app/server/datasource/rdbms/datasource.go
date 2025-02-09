@@ -150,7 +150,7 @@ func (ds *dataSourceImpl) doReadSplitSingleConn(
 	conn rdbms_utils.Connection,
 ) error {
 	databaseName, tableName := conn.From()
-
+	fmt.Println("\n================== doReadSplitSingleConn ==================")
 	readSplitsQuery, err := rdbms_utils.MakeReadSplitsQuery(
 		ctx,
 		logger,
@@ -172,7 +172,7 @@ func (ds *dataSourceImpl) doReadSplitSingleConn(
 		logger,
 		func() error {
 			var queryErr error
-
+			fmt.Println("QUERY: ", readSplitsQuery.QueryText)
 			if rows, queryErr = conn.Query(&readSplitsQuery.QueryParams); queryErr != nil {
 				return fmt.Errorf("query '%s' error: %w", readSplitsQuery.QueryText, queryErr)
 			}
@@ -180,7 +180,7 @@ func (ds *dataSourceImpl) doReadSplitSingleConn(
 			return nil
 		},
 	)
-
+	fmt.Println("ROWS: ", rows)
 	if err != nil {
 		return fmt.Errorf("query: %w", err)
 	}
@@ -199,6 +199,7 @@ func (ds *dataSourceImpl) doReadSplitSingleConn(
 
 	for cont := true; cont; cont = rows.NextResultSet() {
 		for rows.Next() {
+			fmt.Println("ROWS: ", rows)
 			if err := rows.Scan(transformer.GetAcceptors()...); err != nil {
 				return fmt.Errorf("rows scan: %w", err)
 			}

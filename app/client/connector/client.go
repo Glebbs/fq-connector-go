@@ -97,7 +97,7 @@ func callServer(
 	case api_common.EGenericDataSourceKind_CLICKHOUSE, api_common.EGenericDataSourceKind_POSTGRESQL,
 		api_common.EGenericDataSourceKind_YDB, api_common.EGenericDataSourceKind_MS_SQL_SERVER,
 		api_common.EGenericDataSourceKind_MYSQL, api_common.EGenericDataSourceKind_GREENPLUM,
-		api_common.EGenericDataSourceKind_ORACLE, api_common.EGenericDataSourceKind_LOGGING:
+		api_common.EGenericDataSourceKind_ORACLE, api_common.EGenericDataSourceKind_LOGGING, api_common.EGenericDataSourceKind_REDIS:
 		typeMappingSettings := &api_service_protos.TTypeMappingSettings{
 			DateTimeFormat: dateTimeFormat,
 		}
@@ -191,7 +191,7 @@ func readSplits(
 	if err != nil {
 		return fmt.Errorf("read responses to arrow records: %w", err)
 	}
-
+	fmt.Println("records: ", records)
 	dumpReadResponses(logger, records)
 
 	return nil

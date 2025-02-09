@@ -31,6 +31,11 @@ func MakeReadSplitsQuery(
 		true,
 	)
 
+	fmt.Println("\n\n", formatter,
+		slct.GetWhat(),
+		databaseName,
+		tableName, "\n\n")
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to format select statement: %w", err)
 	}

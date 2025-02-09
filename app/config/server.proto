@@ -160,7 +160,7 @@ message TGreenplumConfig {
 
 // TMsSQLServerConfig contains settings specific for MsSQLServer data source
 message TMsSQLServerConfig {
-    // Timeout for ClickHouse connection opening.
+    // Timeout for MsSQLServer connection opening.
     // Valid values should satisfy `time.ParseDuration` (e. g. '5s', '100ms', '3h').
     string open_connection_timeout = 2; 
     // Timeout for MsSQLServer connection pinging.
@@ -170,6 +170,15 @@ message TMsSQLServerConfig {
     TExponentialBackoffConfig exponential_backoff = 10;
 }
 
+// RedisConfig contains settings specific for Redis data source
+message RedisConfig {
+    // Valid values should satisfy `time.ParseDuration` (e. g. '5s', '100ms', '3h').
+    string open_connection_timeout = 2; 
+    // Valid values should satisfy `time.ParseDuration` (e. g. '5s', '100ms', '3h').
+    string ping_connection_timeout = 1;
+
+    TExponentialBackoffConfig exponential_backoff = 10;
+}
 
 message TMySQLConfig {
     uint64 result_chan_capacity = 1;

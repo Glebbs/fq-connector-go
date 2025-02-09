@@ -183,6 +183,29 @@ func newAPIErrorFromMsSQLServer(err error) *api_service_protos.TError {
 	return nil
 }
 
+func newAPIErrorFromRedis(err error) *api_service_protos.TError {
+	var (
+		target mssql.Error
+		status ydb_proto.StatusIds_StatusCode
+	)
+
+	if errors.As(err, &target) {
+		switch {
+		case strings.Contains(target.Message, "Login failed"):
+			status = ydb_proto.StatusIds_UNAUTHORIZED
+		default:
+			status = ydb_proto.StatusIds_INTERNAL_ERROR
+		}
+
+		return &api_service_protos.TError{
+			Status:  status,
+			Message: err.Error(),
+		}
+	}
+
+	return nil
+}
+
 func newAPIErrorFromMySQLError(err error) *api_service_protos.TError {
 	var status ydb_proto.StatusIds_StatusCode
 
@@ -330,6 +353,8 @@ func NewAPIErrorFromStdError(err error, kind api_common.EGenericDataSourceKind) 
 		apiError = newAPIErrorFromMsSQLServer(err)
 	case api_common.EGenericDataSourceKind_LOGGING:
 		apiError = newAPIErrorFromYdbError(err)
+	case api_common.EGenericDataSourceKind_REDIS:
+		apiError = newAPIErrorFromRedis(err)
 	default:
 		panic(fmt.Sprintf("Unexpected data source kind: %v", api_common.EGenericDataSourceKind_name[int32(kind)]))
 	}

@@ -32,7 +32,7 @@ func (f *DefaultSchemaProvider) GetSchema(
 		QueryText: query,
 		QueryArgs: args,
 	}
-
+	fmt.Println("\n================== GetSchema 1 ==================\n", query, "\n====================================\n")
 	rows, err := conn.Query(queryParams)
 	if err != nil {
 		return nil, fmt.Errorf("query builder error: %w", err)
@@ -48,6 +48,7 @@ func (f *DefaultSchemaProvider) GetSchema(
 	sb := NewSchemaBuilder(f.typeMapper, request.TypeMappingSettings)
 
 	for rows.Next() {
+		fmt.Println("\n================== GetSchema 2 ==================\n", rows, "\n====================================\n")
 		if err = rows.Scan(&columnName, &typeName); err != nil {
 			return nil, fmt.Errorf("rows scan: %w", err)
 		}

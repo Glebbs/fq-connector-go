@@ -16,6 +16,7 @@ import (
 	"github.com/ydb-platform/fq-connector-go/app/server/datasource/rdbms/mysql"
 	"github.com/ydb-platform/fq-connector-go/app/server/datasource/rdbms/oracle"
 	"github.com/ydb-platform/fq-connector-go/app/server/datasource/rdbms/postgresql"
+	"github.com/ydb-platform/fq-connector-go/app/server/datasource/rdbms/redis"
 	rdbms_utils "github.com/ydb-platform/fq-connector-go/app/server/datasource/rdbms/utils"
 	"github.com/ydb-platform/fq-connector-go/app/server/datasource/rdbms/ydb"
 	"github.com/ydb-platform/fq-connector-go/app/server/utils/retry"
@@ -32,6 +33,7 @@ type dataSourceFactory struct {
 	mysql               Preset
 	greenplum           Preset
 	oracle              Preset
+	redis               Preset
 	logging             Preset
 	converterCollection conversion.Collection
 	loggingResolver     logging.Resolver
@@ -56,6 +58,8 @@ func (dsf *dataSourceFactory) Make(
 		return NewDataSource(logger, &dsf.greenplum, dsf.converterCollection), nil
 	case api_common.EGenericDataSourceKind_ORACLE:
 		return NewDataSource(logger, &dsf.oracle, dsf.converterCollection), nil
+	case api_common.EGenericDataSourceKind_REDIS:
+		return NewDataSource(logger, &dsf.redis, dsf.converterCollection), nil
 	case api_common.EGenericDataSourceKind_LOGGING:
 		return NewDataSource(logger, &dsf.logging, dsf.converterCollection), nil
 	default:
@@ -86,6 +90,7 @@ func NewDataSourceFactory(
 	msSQLServerTypeMapper := ms_sql_server.NewTypeMapper()
 	mysqlTypeMapper := mysql.NewTypeMapper()
 	oracleTypeMapper := oracle.NewTypeMapper()
+	redisTypeMapper := redis.NewTypeMapper()
 
 	// for PostgreSQL-like systems
 	schemaGetters := map[api_common.EGenericDataSourceKind]func(dsi *api_common.TGenericDataSourceInstance) string{
@@ -180,6 +185,16 @@ func NewDataSourceFactory(
 			RetrierSet: &retry.RetrierSet{
 				MakeConnection: retry.NewRetrierFromConfig(cfg.Oracle.ExponentialBackoff, oracle.ErrorCheckerMakeConnection),
 				Query:          retry.NewRetrierFromConfig(cfg.Oracle.ExponentialBackoff, retry.ErrorCheckerNoop),
+			},
+		},
+		redis: Preset{
+			SQLFormatter:      redis.NewSQLFormatter(),
+			ConnectionManager: redis.NewConnectionManager(cfg.MsSqlServer, connManagerBase),
+			TypeMapper:        redisTypeMapper,
+			SchemaProvider:    rdbms_utils.NewDefaultSchemaProvider(redisTypeMapper, redis.TableMetadataQuery),
+			RetrierSet: &retry.RetrierSet{
+				MakeConnection: retry.NewRetrierFromConfig(cfg.MsSqlServer.ExponentialBackoff, retry.ErrorCheckerMakeConnectionCommon),
+				Query:          retry.NewRetrierFromConfig(cfg.MsSqlServer.ExponentialBackoff, retry.ErrorCheckerNoop),
 			},
 		},
 		converterCollection: converterCollection,
