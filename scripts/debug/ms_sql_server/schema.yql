@@ -1,0 +1,12 @@
+CREATE OBJECT secret_password (TYPE SECRET) WITH (value = "Qwerty12345!");
+
+CREATE EXTERNAL DATA SOURCE MicrosoftSqlServer WITH (
+    SOURCE_TYPE="MicrosoftSqlServer",
+    LOCATION="localhost:1433",
+    DATABASE_NAME="test",
+    AUTH_METHOD="BASIC",
+    LOGIN="SA",
+    PASSWORD_SECRET_NAME="secret_password",
+    PROTOCOL="NATIVE",
+    USE_TLS="FALSE"
+);

@@ -1,0 +1,21 @@
+connector_server_endpoint {
+    host: "localhost"
+    port: 2130
+}
+
+data_source_instance {
+    kind: REDIS
+    endpoint {
+        host: "localhost"
+        port: 6379
+    }
+    database: "fq"
+    credentials {
+        basic {
+            username: "SA"
+            password: "Qwerty12345!"
+        }
+    }
+    protocol: NATIVE
+    use_tls: false
+}
